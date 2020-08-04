@@ -2,16 +2,21 @@ package Main;
 
 import java.util.Scanner;
 
+import Main.DAO.MemberDao;
 import Main.DTO.RegisterRequest;
+import Main.service.Assembler;
+import Main.service.ChangePasswordService;
+import Main.service.MemberInfoPrinter;
 import Main.service.MemberListPrinter;
+import Main.service.MemberPrinter;
 import Main.service.MemberRegisterService;
 
 public class App {
-
+	private static Assembler assembler = new Assembler();
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		while (true) {
-
+			
 			System.out.println("명령어를 입력하세요: ");
 			String command = sc.nextLine();
 			if (command.startsWith("new")) {
@@ -33,16 +38,34 @@ public class App {
 					continue;
 				}
 				// dependency object
-				MemberRegisterService mrs = new MemberRegisterService();
+				MemberRegisterService mrs = assembler.getMemberRegisterService();
 				mrs.regist(req);
 			} else if (command.startsWith("change ")) {
+				String [] arg = command.split(" ");
+				if (arg.length !=4) {
+					printHelp();
+					continue;
+				}
+				ChangePasswordService changePwdSvc = assembler.getChangePasswordService();
+				changePwdSvc.changePassword(arg[1],arg[2],arg[3]);
 			} else if (command.equals("list")) {
-				MemberListPrinter listPrint = new MemberListPrinter();
+				MemberListPrinter listPrint = assembler.getMemberListPrinter();
 				listPrint.printAll();
 			} else if (command.startsWith("info ")) {
+				String [] arg = command.split(" ");
+				if (arg.length != 2) {
+					printHelp();
+					continue;
+				}
+				MemberInfoPrinter infoprinter =assembler.getMemberInfoPrinter();
+				//의존객체 주입
+				infoprinter.printMemberInfo(arg[1]);
+				
 			} else if (command.equals("exit")) {
 				System.out.println("프로그램이 종료되었습니다.");
 				System.exit(0);
+			}else {
+				printHelp();
 			}
 		}
 	}

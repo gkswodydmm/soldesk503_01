@@ -8,7 +8,11 @@ import Main.DTO.RegisterRequest;
 
 public class MemberRegisterService {
 	// 의존 객체
-	private MemberDao memberDao = new MemberDao();
+	private MemberDao memberDao;
+	// 의족 객체 주입: Dependenc
+	public  MemberRegisterService(MemberDao memberDao) {
+		this.memberDao = memberDao;
+	}
 	public void regist(RegisterRequest req) {
 		MemberDTO dto = memberDao.selectByEmail(req.getEmail());
 		if(dto == null) {
